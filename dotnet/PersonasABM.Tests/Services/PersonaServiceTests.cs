@@ -5,6 +5,7 @@ using PersonasABM.Application.DTOs;
 using PersonasABM.Application.Services;
 using PersonasABM.Domain.Entities;
 using PersonasABM.Application.Interfaces;
+using Xunit;
 
 namespace PersonasABM.Tests.Services;
 
@@ -101,7 +102,7 @@ public class PersonaServiceTests
             Estado = createDto.Estado
         };
 
-        _mockRepository.Setup(r => r.ExistsByIdentificacionAsync(createDto.Identificacion)).ReturnsAsync(false);
+        _mockRepository.Setup(r => r.ExistsByIdentificacionAsync(createDto.Identificacion, null)).ReturnsAsync(false);
         _mockRepository.Setup(r => r.AddAsync(It.IsAny<Persona>())).ReturnsAsync(createdPersona);
 
         // Act
@@ -126,7 +127,7 @@ public class PersonaServiceTests
             Estado = "Activo"
         };
 
-        _mockRepository.Setup(r => r.ExistsByIdentificacionAsync(createDto.Identificacion)).ReturnsAsync(true);
+        _mockRepository.Setup(r => r.ExistsByIdentificacionAsync(createDto.Identificacion, null)).ReturnsAsync(true);
 
         // Act & Assert
         await _service.Invoking(s => s.CreateAsync(createDto))
