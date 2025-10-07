@@ -1,35 +1,46 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { PersonaAtributo } from './PersonaAtributo';
 
 @Entity('personas')
 export class Persona {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'varchar', length: 200 })
-  nombreCompleto: string;
+  nombreCompleto!: string;
 
   @Column({ type: 'varchar', length: 20, unique: true })
-  identificacion: string;
+  identificacion!: string;
 
   @Column({ type: 'int' })
-  edad: number;
+  edad!: number;
 
   @Column({ type: 'varchar', length: 10 })
-  genero: string;
+  genero!: string;
 
   @Column({ type: 'varchar', length: 20, default: 'Activo' })
-  estado: string;
+  estado!: string;
 
   @Column({ type: 'nvarchar', length: 'MAX', default: '{}' })
-  atributosAdicionales: string;
+  atributosAdicionales!: string;
 
   @CreateDateColumn()
-  fechaCreacion: Date;
+  fechaCreacion!: Date;
 
   @UpdateDateColumn({ nullable: true })
   fechaModificacion?: Date;
 
-  @OneToMany(() => PersonaAtributo, personaAtributo => personaAtributo.persona, { cascade: true })
-  personaAtributos: PersonaAtributo[];
+  @OneToMany(
+    () => PersonaAtributo,
+    (personaAtributo) => personaAtributo.persona,
+    { cascade: true }
+  )
+  personaAtributos!: PersonaAtributo[];
 }

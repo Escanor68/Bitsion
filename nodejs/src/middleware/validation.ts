@@ -8,12 +8,12 @@ export const validateDto = (dtoClass: any) => {
     const errors = await validate(dto);
 
     if (errors.length > 0) {
-      const errorMessages = errors.map(error => 
+      const errorMessages = errors.map((error) =>
         Object.values(error.constraints || {}).join(', ')
       );
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Datos de entrada inválidos',
-        errors: errorMessages 
+        errors: errorMessages,
       });
     }
 

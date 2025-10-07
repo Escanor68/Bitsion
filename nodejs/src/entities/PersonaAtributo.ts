@@ -1,32 +1,46 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Persona } from './Persona';
 import { AtributoTipo } from './AtributoTipo';
 
 @Entity('persona_atributos')
 export class PersonaAtributo {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  personaId: number;
+  personaId!: number;
 
   @Column()
-  atributoTipoId: number;
+  atributoTipoId!: number;
 
   @Column({ type: 'varchar', length: 500 })
-  valor: string;
+  valor!: string;
 
   @CreateDateColumn()
-  fechaCreacion: Date;
+  fechaCreacion!: Date;
 
   @UpdateDateColumn({ nullable: true })
   fechaModificacion?: Date;
 
-  @ManyToOne(() => Persona, persona => persona.personaAtributos, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Persona, (persona) => persona.personaAtributos, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'personaId' })
-  persona: Persona;
+  persona!: Persona;
 
-  @ManyToOne(() => AtributoTipo, atributoTipo => atributoTipo.personaAtributos, { onDelete: 'CASCADE' })
+  @ManyToOne(
+    () => AtributoTipo,
+    (atributoTipo) => atributoTipo.personaAtributos,
+    { onDelete: 'CASCADE' }
+  )
   @JoinColumn({ name: 'atributoTipoId' })
-  atributoTipo: AtributoTipo;
+  atributoTipo!: AtributoTipo;
 }

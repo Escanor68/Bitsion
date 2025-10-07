@@ -8,7 +8,11 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticateToken = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -23,7 +27,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 
     req.user = {
       username: decoded.username,
-      role: decoded.role
+      role: decoded.role,
     };
     next();
   });
@@ -36,7 +40,9 @@ export const requireRole = (roles: string[]) => {
     }
 
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'No tiene permisos para realizar esta acción' });
+      return res
+        .status(403)
+        .json({ message: 'No tiene permisos para realizar esta acción' });
     }
 
     next();

@@ -10,10 +10,12 @@ export class AuthController {
       // Usuarios demo (en producción esto vendría de una base de datos)
       const users = [
         { username: 'admin', password: 'admin123', role: 'Admin' },
-        { username: 'consultor', password: 'consultor123', role: 'Consultor' }
+        { username: 'consultor', password: 'consultor123', role: 'Consultor' },
       ];
 
-      const user = users.find(u => u.username === username && u.password === password);
+      const user = users.find(
+        (u) => u.username === username && u.password === password
+      );
 
       if (!user) {
         res.status(401).json({ message: 'Credenciales inválidas' });
@@ -21,15 +23,13 @@ export class AuthController {
       }
 
       const token = jwt.sign(
-        { 
-          username: user.username, 
-          role: user.role 
+        {
+          username: user.username,
+          role: user.role,
         },
         process.env.JWT_SECRET!,
-        { 
-          expiresIn: process.env.JWT_EXPIRES_IN || '24h',
-          issuer: process.env.JWT_ISSUER || 'PersonasABM',
-          audience: process.env.JWT_AUDIENCE || 'PersonasABMUsers'
+        {
+          expiresIn: '24h',
         }
       );
 
@@ -37,7 +37,7 @@ export class AuthController {
         token,
         username: user.username,
         role: user.role,
-        message: 'Login exitoso'
+        message: 'Login exitoso',
       };
 
       res.json(response);
