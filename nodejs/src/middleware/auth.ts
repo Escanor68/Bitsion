@@ -12,17 +12,19 @@ export const authenticateToken = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ message: 'Token de acceso requerido' });
+    res.status(401).json({ message: 'Token de acceso requerido' });
+    return;
   }
 
   jwt.verify(token, process.env.JWT_SECRET!, (err, decoded: any) => {
     if (err) {
-      return res.status(403).json({ message: 'Token inválido' });
+      res.status(403).json({ message: 'Token inválido' });
+      return;
     }
 
     req.user = {
@@ -34,15 +36,17 @@ export const authenticateToken = (
 };
 
 export const requireRole = (roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
+  return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({ message: 'No autenticado' });
+      res.status(401).json({ message: 'No autenticado' });
+      return;
     }
 
     if (!roles.includes(req.user.role)) {
-      return res
+      res
         .status(403)
         .json({ message: 'No tiene permisos para realizar esta acción' });
+      return;
     }
 
     next();

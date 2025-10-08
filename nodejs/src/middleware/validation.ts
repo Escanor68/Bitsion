@@ -3,7 +3,11 @@ import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
 export const validateDto = (dtoClass: any) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const dto = plainToClass(dtoClass, req.body);
     const errors = await validate(dto);
 
@@ -11,10 +15,11 @@ export const validateDto = (dtoClass: any) => {
       const errorMessages = errors.map((error) =>
         Object.values(error.constraints || {}).join(', ')
       );
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Datos de entrada inválidos',
         errors: errorMessages,
       });
+      return;
     }
 
     req.body = dto;
