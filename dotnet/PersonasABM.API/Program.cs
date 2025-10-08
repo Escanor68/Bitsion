@@ -100,7 +100,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Comentado para permitir HTTP en desarrollo
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();

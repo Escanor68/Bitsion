@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonasABM.Domain.Entities;
 
@@ -30,6 +31,7 @@ public class Persona
     public DateTime? FechaModificacion { get; set; }
     
     // Atributos adicionales como JSON
+    [Column(TypeName = "TEXT")]
     public string AtributosAdicionales { get; set; } = "{}";
     
     // Navegación
