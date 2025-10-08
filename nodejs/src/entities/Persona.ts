@@ -28,7 +28,7 @@ export class Persona {
   @Column({ type: 'varchar', length: 20, default: 'Activo' })
   estado!: string;
 
-  @Column({ type: 'nvarchar', length: 'MAX', default: '{}' })
+  @Column({ type: 'text', default: '{}' })
   atributosAdicionales!: string;
 
   @CreateDateColumn()
