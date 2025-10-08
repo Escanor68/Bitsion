@@ -2,7 +2,11 @@ import request from 'supertest';
 import express from 'express';
 import { PersonasController } from '../../controllers/PersonasController';
 import { IPersonaService } from '../../services/IPersonaService';
-import { PersonaDto, CreatePersonaDto, UpdatePersonaDto } from '../../dto/PersonaDto';
+import {
+  PersonaDto,
+  CreatePersonaDto,
+  UpdatePersonaDto,
+} from '../../dto/PersonaDto';
 
 describe('PersonasController', () => {
   let app: express.Application;
@@ -17,7 +21,7 @@ describe('PersonasController', () => {
       update: jest.fn(),
       delete: jest.fn(),
       search: jest.fn(),
-      validateIdentificacion: jest.fn()
+      validateIdentificacion: jest.fn(),
     } as jest.Mocked<IPersonaService>;
 
     personasController = new PersonasController(mockPersonaService);
@@ -25,12 +29,27 @@ describe('PersonasController', () => {
     app = express();
     app.use(express.json());
     app.get('/personas', personasController.getAll.bind(personasController));
-    app.get('/personas/:id', personasController.getById.bind(personasController));
+    app.get(
+      '/personas/:id',
+      personasController.getById.bind(personasController)
+    );
     app.post('/personas', personasController.create.bind(personasController));
-    app.put('/personas/:id', personasController.update.bind(personasController));
-    app.delete('/personas/:id', personasController.delete.bind(personasController));
-    app.post('/personas/search', personasController.search.bind(personasController));
-    app.get('/personas/validate-identificacion/:identificacion', personasController.validateIdentificacion.bind(personasController));
+    app.put(
+      '/personas/:id',
+      personasController.update.bind(personasController)
+    );
+    app.delete(
+      '/personas/:id',
+      personasController.delete.bind(personasController)
+    );
+    app.post(
+      '/personas/search',
+      personasController.search.bind(personasController)
+    );
+    app.get(
+      '/personas/validate-identificacion/:identificacion',
+      personasController.validateIdentificacion.bind(personasController)
+    );
   });
 
   describe('GET /personas', () => {
@@ -45,26 +64,27 @@ describe('PersonasController', () => {
           estado: 'Activo',
           fechaCreacion: new Date(),
           atributosAdicionales: {},
-          atributosDetallados: []
-        }
+          atributosDetallados: [],
+        },
       ];
 
       mockPersonaService.findAll.mockResolvedValue(personas);
 
-      const response = await request(app)
-        .get('/personas')
-        .expect(200);
+      const response = await request(app).get('/personas').expect(200);
 
-      expect(response.body).toEqual(personas);
+      expect(response.body).toEqual(
+        personas.map((p) => ({
+          ...p,
+          fechaCreacion: p.fechaCreacion.toISOString(),
+        }))
+      );
       expect(mockPersonaService.findAll).toHaveBeenCalledTimes(1);
     });
 
     it('should handle service errors', async () => {
       mockPersonaService.findAll.mockRejectedValue(new Error('Database error'));
 
-      const response = await request(app)
-        .get('/personas')
-        .expect(500);
+      const response = await request(app).get('/personas').expect(500);
 
       expect(response.body.message).toBe('Error interno del servidor');
     });
@@ -81,27 +101,28 @@ describe('PersonasController', () => {
         estado: 'Activo',
         fechaCreacion: new Date(),
         atributosAdicionales: {},
-        atributosDetallados: []
+        atributosDetallados: [],
       };
 
       mockPersonaService.findById.mockResolvedValue(persona);
 
-      const response = await request(app)
-        .get('/personas/1')
-        .expect(200);
+      const response = await request(app).get('/personas/1').expect(200);
 
-      expect(response.body).toEqual(persona);
+      expect(response.body).toEqual({
+        ...persona,
+        fechaCreacion: persona.fechaCreacion.toISOString(),
+      });
       expect(mockPersonaService.findById).toHaveBeenCalledWith(1);
     });
 
     it('should return 404 when persona not found', async () => {
       mockPersonaService.findById.mockResolvedValue(null);
 
-      const response = await request(app)
-        .get('/personas/999')
-        .expect(404);
+      const response = await request(app).get('/personas/999').expect(404);
 
-      expect(response.body.message).toBe('No se encontró la persona con ID: 999');
+      expect(response.body.message).toBe(
+        'No se encontró la persona con ID: 999'
+      );
     });
   });
 
@@ -112,15 +133,16 @@ describe('PersonasController', () => {
         identificacion: '11223344',
         edad: 35,
         genero: 'Masculino',
-        estado: 'Activo'
+        estado: 'Activo',
       };
 
       const createdPersona: PersonaDto = {
         id: 3,
         ...createDto,
+        estado: createDto.estado || 'Activo',
         fechaCreacion: new Date(),
         atributosAdicionales: {},
-        atributosDetallados: []
+        atributosDetallados: [],
       };
 
       mockPersonaService.create.mockResolvedValue(createdPersona);
@@ -130,7 +152,10 @@ describe('PersonasController', () => {
         .send(createDto)
         .expect(201);
 
-      expect(response.body).toEqual(createdPersona);
+      expect(response.body).toEqual({
+        ...createdPersona,
+        fechaCreacion: createdPersona.fechaCreacion.toISOString(),
+      });
       expect(mockPersonaService.create).toHaveBeenCalledWith(createDto);
     });
 
@@ -140,17 +165,21 @@ describe('PersonasController', () => {
         identificacion: '12345678',
         edad: 35,
         genero: 'Masculino',
-        estado: 'Activo'
+        estado: 'Activo',
       };
 
-      mockPersonaService.create.mockRejectedValue(new Error('Ya existe una persona con esta identificación'));
+      mockPersonaService.create.mockRejectedValue(
+        new Error('Ya existe una persona con esta identificación')
+      );
 
       const response = await request(app)
         .post('/personas')
         .send(createDto)
         .expect(400);
 
-      expect(response.body.message).toBe('Ya existe una persona con esta identificación');
+      expect(response.body.message).toBe(
+        'Ya existe una persona con esta identificación'
+      );
     });
   });
 
@@ -161,7 +190,7 @@ describe('PersonasController', () => {
         identificacion: '12345678',
         edad: 31,
         genero: 'Masculino',
-        estado: 'Activo'
+        estado: 'Activo',
       };
 
       const updatedPersona: PersonaDto = {
@@ -170,7 +199,7 @@ describe('PersonasController', () => {
         fechaCreacion: new Date(),
         fechaModificacion: new Date(),
         atributosAdicionales: {},
-        atributosDetallados: []
+        atributosDetallados: [],
       };
 
       mockPersonaService.update.mockResolvedValue(updatedPersona);
@@ -180,7 +209,11 @@ describe('PersonasController', () => {
         .send(updateDto)
         .expect(200);
 
-      expect(response.body).toEqual(updatedPersona);
+      expect(response.body).toEqual({
+        ...updatedPersona,
+        fechaCreacion: updatedPersona.fechaCreacion.toISOString(),
+        fechaModificacion: updatedPersona.fechaModificacion?.toISOString(),
+      });
       expect(mockPersonaService.update).toHaveBeenCalledWith(1, updateDto);
     });
 
@@ -190,17 +223,21 @@ describe('PersonasController', () => {
         identificacion: '12345678',
         edad: 31,
         genero: 'Masculino',
-        estado: 'Activo'
+        estado: 'Activo',
       };
 
-      mockPersonaService.update.mockRejectedValue(new Error('No se encontró la persona con ID: 999'));
+      mockPersonaService.update.mockRejectedValue(
+        new Error('No se encontró la persona con ID: 999')
+      );
 
       const response = await request(app)
         .put('/personas/999')
         .send(updateDto)
         .expect(404);
 
-      expect(response.body.message).toBe('No se encontró la persona con ID: 999');
+      expect(response.body.message).toBe(
+        'No se encontró la persona con ID: 999'
+      );
     });
   });
 
@@ -208,21 +245,21 @@ describe('PersonasController', () => {
     it('should delete persona when found', async () => {
       mockPersonaService.delete.mockResolvedValue();
 
-      await request(app)
-        .delete('/personas/1')
-        .expect(204);
+      await request(app).delete('/personas/1').expect(204);
 
       expect(mockPersonaService.delete).toHaveBeenCalledWith(1);
     });
 
     it('should return 404 when persona not found', async () => {
-      mockPersonaService.delete.mockRejectedValue(new Error('No se encontró la persona con ID: 999'));
+      mockPersonaService.delete.mockRejectedValue(
+        new Error('No se encontró la persona con ID: 999')
+      );
 
-      const response = await request(app)
-        .delete('/personas/999')
-        .expect(404);
+      const response = await request(app).delete('/personas/999').expect(404);
 
-      expect(response.body.message).toBe('No se encontró la persona con ID: 999');
+      expect(response.body.message).toBe(
+        'No se encontró la persona con ID: 999'
+      );
     });
   });
 
@@ -238,15 +275,15 @@ describe('PersonasController', () => {
           estado: 'Activo',
           fechaCreacion: new Date(),
           atributosAdicionales: {},
-          atributosDetallados: []
-        }
+          atributosDetallados: [],
+        },
       ];
 
       const searchDto = {
         nombre: 'Juan',
         estado: 'Activo',
         edadMinima: 25,
-        edadMaxima: 35
+        edadMaxima: 35,
       };
 
       mockPersonaService.search.mockResolvedValue(personas);
@@ -256,7 +293,12 @@ describe('PersonasController', () => {
         .send(searchDto)
         .expect(200);
 
-      expect(response.body).toEqual(personas);
+      expect(response.body).toEqual(
+        personas.map((p) => ({
+          ...p,
+          fechaCreacion: p.fechaCreacion.toISOString(),
+        }))
+      );
       expect(mockPersonaService.search).toHaveBeenCalledWith(searchDto);
     });
   });
@@ -270,7 +312,10 @@ describe('PersonasController', () => {
         .expect(200);
 
       expect(response.body).toEqual({ isValid: true });
-      expect(mockPersonaService.validateIdentificacion).toHaveBeenCalledWith('12345678', undefined);
+      expect(mockPersonaService.validateIdentificacion).toHaveBeenCalledWith(
+        '12345678',
+        undefined
+      );
     });
 
     it('should exclude current persona when updating', async () => {
@@ -281,7 +326,10 @@ describe('PersonasController', () => {
         .expect(200);
 
       expect(response.body).toEqual({ isValid: true });
-      expect(mockPersonaService.validateIdentificacion).toHaveBeenCalledWith('12345678', 1);
+      expect(mockPersonaService.validateIdentificacion).toHaveBeenCalledWith(
+        '12345678',
+        1
+      );
     });
   });
 });

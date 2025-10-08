@@ -20,12 +20,13 @@ public class ApplicationDbContext : DbContext
         // Configuración de Persona
         modelBuilder.Entity<Persona>(entity =>
         {
+            entity.ToTable("personas");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.NombreCompleto).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Identificacion).IsRequired().HasMaxLength(20);
             entity.Property(e => e.Genero).IsRequired().HasMaxLength(10);
             entity.Property(e => e.Estado).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.AtributosAdicionales).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.AtributosAdicionales).HasColumnType("TEXT");
             
             entity.HasIndex(e => e.Identificacion).IsUnique();
         });
@@ -33,6 +34,7 @@ public class ApplicationDbContext : DbContext
         // Configuración de AtributoTipo
         modelBuilder.Entity<AtributoTipo>(entity =>
         {
+            entity.ToTable("atributo_tipos");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Descripcion).HasMaxLength(500);
@@ -42,6 +44,7 @@ public class ApplicationDbContext : DbContext
         // Configuración de PersonaAtributo
         modelBuilder.Entity<PersonaAtributo>(entity =>
         {
+            entity.ToTable("persona_atributos");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Valor).IsRequired().HasMaxLength(500);
             

@@ -3,34 +3,33 @@
 ## 🚀 Inicio Rápido
 
 ### Prerrequisitos
+
 - Node.js 18+
 - npm o yarn
-- SQL Server (LocalDB o instancia completa)
+- SQLite (incluido automáticamente)
 
 ### Instalación
 
 1. **Instalar dependencias:**
+
 ```bash
 npm install
 ```
 
-2. **Configurar variables de entorno:**
+2. **Configurar base de datos SQLite:**
+
 ```bash
-cp env.example .env
-# Editar .env con tu configuración
+npm run db:setup
 ```
 
 3. **Compilar TypeScript:**
+
 ```bash
 npm run build
 ```
 
-4. **Ejecutar migraciones:**
-```bash
-npm run migration:run
-```
+4. **Ejecutar la aplicación:**
 
-5. **Ejecutar la aplicación:**
 ```bash
 # Desarrollo
 npm run dev
@@ -40,6 +39,7 @@ npm start
 ```
 
 6. **Acceder a la API:**
+
 - URL: `http://localhost:3000`
 - Health Check: `http://localhost:3000/health`
 
@@ -81,14 +81,9 @@ src/
 ### Variables de Entorno (.env)
 
 ```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=1433
-DB_USERNAME=sa
-DB_PASSWORD=YourPassword123
-DB_DATABASE=PersonasABM
-DB_ENCRYPT=true
-DB_TRUST_SERVER_CERTIFICATE=true
+# Database Configuration (SQLite)
+DB_TYPE=sqlite
+DB_DATABASE=./PersonasABM.db
 
 # JWT Configuration
 JWT_SECRET=MiClaveSecretaSuperSeguraParaJWT2024!
@@ -102,18 +97,28 @@ NODE_ENV=development
 LOG_LEVEL=info
 ```
 
-### Base de Datos
-La aplicación usa TypeORM con SQL Server. La configuración se encuentra en `src/config/database.ts`.
+### Base de Datos SQLite
+
+La aplicación usa TypeORM con SQLite. La base de datos se crea automáticamente en `./PersonasABM.db` cuando se inicia el servidor.
+
+**Ventajas de SQLite:**
+
+- ✅ Sin configuración de servidor
+- ✅ Archivo único y portable
+- ✅ Rápido para desarrollo
+- ✅ No requiere instalación adicional
 
 ## 🔐 Autenticación
 
 ### Usuarios Demo
-| Usuario | Contraseña | Rol | Permisos |
-|---------|------------|-----|----------|
-| admin | admin123 | Admin | CRUD completo |
-| consultor | consultor123 | Consultor | Solo lectura |
+
+| Usuario   | Contraseña   | Rol       | Permisos      |
+| --------- | ------------ | --------- | ------------- |
+| admin     | admin123     | Admin     | CRUD completo |
+| consultor | consultor123 | Consultor | Solo lectura  |
 
 ### Obtener Token
+
 ```bash
 curl -X POST "http://localhost:3000/api/auth/login" \
   -H "Content-Type: application/json" \
@@ -123,9 +128,11 @@ curl -X POST "http://localhost:3000/api/auth/login" \
 ## 📚 Endpoints
 
 ### Autenticación
+
 - `POST /api/auth/login` - Iniciar sesión
 
 ### Personas
+
 - `GET /api/personas` - Listar todas las personas
 - `GET /api/personas/{id}` - Obtener persona por ID
 - `POST /api/personas` - Crear persona (Solo Admin)
@@ -137,6 +144,7 @@ curl -X POST "http://localhost:3000/api/auth/login" \
 ## 🧪 Testing
 
 ### Ejecutar Tests
+
 ```bash
 # Todos los tests
 npm test
@@ -149,6 +157,7 @@ npm run test:coverage
 ```
 
 ### Tests Incluidos
+
 - ✅ PersonaServiceTests - Tests de lógica de negocio
 - ✅ PersonasControllerTests - Tests de controladores
 - ✅ Validaciones de entrada
@@ -160,6 +169,7 @@ npm run test:coverage
 ### Entidades Principales
 
 **Persona:**
+
 ```typescript
 @Entity('personas')
 export class Persona {
@@ -187,6 +197,7 @@ export class Persona {
 ```
 
 **AtributoTipo:**
+
 ```typescript
 @Entity('atributo_tipos')
 export class AtributoTipo {
@@ -210,6 +221,7 @@ export class AtributoTipo {
 ## 🔍 Características Técnicas
 
 ### Middleware
+
 - **Helmet**: Seguridad HTTP
 - **CORS**: Cross-Origin Resource Sharing
 - **Morgan**: Logging de requests
@@ -217,16 +229,19 @@ export class AtributoTipo {
 - **Rate Limiting**: Límite de requests por IP
 
 ### Validaciones
+
 - **class-validator**: Validaciones de DTOs
 - **class-transformer**: Transformación de datos
 - Validaciones de negocio en servicios
 
 ### Logging
+
 - Morgan para HTTP requests
 - Console logging personalizado
 - Diferentes niveles por ambiente
 
 ### Seguridad
+
 - JWT Authentication
 - Authorization por roles
 - Helmet para headers de seguridad
@@ -248,6 +263,8 @@ npm run test:watch  # Tests en modo watch
 npm run test:coverage # Tests con coverage
 
 # Base de datos
+npm run db:setup          # Configurar y verificar SQLite
+npm run db:check          # Verificar tablas de la base de datos
 npm run migration:generate  # Generar migración
 npm run migration:run      # Ejecutar migraciones
 npm run migration:revert   # Revertir última migración
@@ -256,11 +273,13 @@ npm run migration:revert   # Revertir última migración
 ## 📈 Monitoreo
 
 ### Health Check
+
 - Endpoint: `GET /health`
 - Información de estado de la aplicación
 - Uptime y timestamp
 
 ### Logs
+
 - Morgan para HTTP requests
 - Console logging estructurado
 - Diferentes niveles según ambiente
@@ -270,6 +289,7 @@ npm run migration:revert   # Revertir última migración
 ### Problemas Comunes
 
 1. **Error de conexión a BD:**
+
    ```bash
    # Verificar configuración en .env
    # Verificar que SQL Server esté ejecutándose
@@ -277,6 +297,7 @@ npm run migration:revert   # Revertir última migración
    ```
 
 2. **Error de TypeScript:**
+
    ```bash
    # Limpiar y recompilar
    rm -rf dist/
@@ -284,6 +305,7 @@ npm run migration:revert   # Revertir última migración
    ```
 
 3. **Error de dependencias:**
+
    ```bash
    # Limpiar node_modules y reinstalar
    rm -rf node_modules package-lock.json
@@ -297,6 +319,7 @@ npm run migration:revert   # Revertir última migración
 ## 🐳 Docker (Opcional)
 
 ### Dockerfile
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -314,13 +337,14 @@ CMD ["npm", "start"]
 ```
 
 ### docker-compose.yml
+
 ```yaml
 version: '3.8'
 services:
   api:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - DB_HOST=db
@@ -333,7 +357,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=YourPassword123
     ports:
-      - "1433:1433"
+      - '1433:1433'
 ```
 
 ## 📞 Soporte
@@ -348,16 +372,19 @@ Para problemas técnicos o consultas sobre la implementación:
 ## 🔄 Migraciones
 
 ### Generar Migración
+
 ```bash
 npm run migration:generate -- -n NombreMigracion
 ```
 
 ### Ejecutar Migraciones
+
 ```bash
 npm run migration:run
 ```
 
 ### Revertir Migración
+
 ```bash
 npm run migration:revert
 ```
@@ -365,6 +392,7 @@ npm run migration:revert
 ## 📊 Performance
 
 ### Optimizaciones Incluidas
+
 - ✅ Compresión de respuestas
 - ✅ Rate limiting
 - ✅ Queries optimizadas con TypeORM

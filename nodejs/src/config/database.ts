@@ -4,15 +4,30 @@ import { AtributoTipo } from '../entities/AtributoTipo';
 import { PersonaAtributo } from '../entities/PersonaAtributo';
 
 export const AppDataSource = new DataSource({
-  type: 'mysql',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  username: process.env.DB_USERNAME || 'personas_user',
-  password: process.env.DB_PASSWORD || 'personas123',
-  database: process.env.DB_DATABASE || 'PersonasABM',
+  type: 'sqlite',
+  database: process.env.DB_DATABASE || './PersonasABM.db',
   entities: [Persona, AtributoTipo, PersonaAtributo],
   synchronize: process.env.NODE_ENV === 'development', // Solo para desarrollo
   logging: process.env.NODE_ENV === 'development',
   migrations: ['src/migrations/*.ts'],
   migrationsTableName: 'migrations',
+  // Configuraciones adicionales para SQLite
+  enableWAL: true, // Habilitar Write-Ahead Logging para mejor rendimiento
+  cache: {
+    duration: 30000, // Cache de 30 segundos
+  },
 });
+
+// Función para inicializar la conexión a la base de datos
+export const initializeDatabase = async (): Promise<void> => {
+  try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+      console.log('✅ Base de datos SQLite conectada exitosamente');
+      console.log(`📁 Ubicación: ${AppDataSource.options.database}`);
+    }
+  } catch (error) {
+    console.error('❌ Error al conectar con la base de datos SQLite:', error);
+    throw error;
+  }
+};

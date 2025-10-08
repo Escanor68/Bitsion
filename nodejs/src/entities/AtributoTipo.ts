@@ -21,10 +21,10 @@ export class AtributoTipo {
   @Column({ type: 'varchar', length: 20, default: 'Texto' })
   tipoDato!: string;
 
-  @Column({ type: 'bit', default: false })
+  @Column({ type: 'boolean', default: false })
   esObligatorio!: boolean;
 
-  @Column({ type: 'bit', default: true })
+  @Column({ type: 'boolean', default: true })
   activo!: boolean;
 
   @CreateDateColumn()

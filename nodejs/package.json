@@ -10,6 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "db:setup": "node scripts/db-setup.js",
+    "db:check": "sqlite3 PersonasABM.db '.tables'",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/config/database.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/config/database.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/database.ts"
@@ -39,6 +41,7 @@
     "mssql": "^10.0.1",
     "mysql2": "^3.15.1",
     "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.1.7",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {

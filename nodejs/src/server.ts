@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-import { AppDataSource } from './config/database';
+import { AppDataSource, initializeDatabase } from './config/database';
 import { PersonaRepository } from './repositories/PersonaRepository';
 import { PersonaService } from './services/PersonaService';
 import authRoutes from './routes/auth';
@@ -27,7 +27,7 @@ app.use(compression());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // máximo 100 requests por IP por ventana
-  message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.'
+  message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.',
 });
 app.use(limiter);
 
@@ -48,10 +48,10 @@ app.use('/api/personas', createPersonasRouter(personaService));
 
 // Ruta de salud
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
@@ -61,18 +61,25 @@ app.get('/', (req, res) => {
     message: 'Personas ABM API',
     version: '1.0.0',
     documentation: '/api-docs',
-    health: '/health'
+    health: '/health',
   });
 });
 
 // Middleware de manejo de errores
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Error no manejado:', err);
-  res.status(500).json({ 
-    message: 'Error interno del servidor',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error('Error no manejado:', err);
+    res.status(500).json({
+      message: 'Error interno del servidor',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+    });
+  }
+);
 
 // Middleware para rutas no encontradas
 app.use('*', (req, res) => {
@@ -82,9 +89,8 @@ app.use('*', (req, res) => {
 // Inicializar base de datos y servidor
 async function startServer() {
   try {
-    // Inicializar TypeORM
-    await AppDataSource.initialize();
-    console.log('✅ Base de datos conectada exitosamente');
+    // Inicializar TypeORM con SQLite
+    await initializeDatabase();
 
     // Iniciar servidor
     app.listen(PORT, () => {
