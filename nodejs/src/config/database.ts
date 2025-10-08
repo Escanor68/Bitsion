@@ -7,9 +7,9 @@ export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: process.env.DB_DATABASE || './PersonasABM.db',
   entities: [Persona, AtributoTipo, PersonaAtributo],
-  synchronize: process.env.NODE_ENV === 'development', // Solo para desarrollo
+  synchronize: false, // Deshabilitar synchronize para usar migraciones
   logging: process.env.NODE_ENV === 'development',
-  migrations: ['src/migrations/*.ts'],
+  migrations: ['dist/migrations/*.js'], // Usar archivos compilados
   migrationsTableName: 'migrations',
   // Configuraciones adicionales para SQLite
   enableWAL: true, // Habilitar Write-Ahead Logging para mejor rendimiento
